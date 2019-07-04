@@ -21,11 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Thrzn41.WebexTeams" Version="1.6.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
     <ProjectReference Include="..\Microsoft.Bot.Builder.BotKit\Microsoft.Bot.Builder.BotKit.csproj" />
   </ItemGroup>
 

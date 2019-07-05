@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Builder.BotKit.Core;
 using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
+using Thrzn41.WebexTeams;
 using Thrzn41.WebexTeams.Version1;
 
 namespace Microsoft.Bot.Builder.Adapters.Webex
@@ -40,7 +41,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (this.config.AccessToken != null)
             {
-                //this.api = new TeamsAPIClient(this.config.AccessToken, null, new Func<TeamsResultInfo>);
+                // this.api = new TeamsAPIClient(this.config.AccessToken, null, new Func<TeamsResultInfo>);
+                this.api = TeamsAPI.CreateVersion1Client(config.AccessToken);
 
                 if (this.api == null)
                 {
@@ -49,7 +51,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
             else
             {
-                // error: access_token required to create controller
+                throw new Exception("AccessToken required to create controller");
             }
 
             if (this.config.PublicAdress != null)
@@ -62,12 +64,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    // Could not determine hostname of public address
+                    throw new Exception("Could not determine hostname of public address");
                 }
             }
             else
             {
-                // error: public_address parameter required to receive webhooks
+                throw new Exception("PublicAddress parameter required to receive webhooks");
             }
 
             if (this.config.Secret == null)

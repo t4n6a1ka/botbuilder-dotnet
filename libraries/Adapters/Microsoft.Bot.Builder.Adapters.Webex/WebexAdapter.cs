@@ -60,7 +60,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (endpoint.Host != null)
                 {
-                    this.config.PublicAdress = endpoint.Host + endpoint.Port;
+                    this.config.PublicAdress = endpoint.Host + ":" + endpoint.Port;
                 }
                 else
                 {
@@ -180,7 +180,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 if (activity.Type.Equals(ActivityTypes.Message))
                 {
                     // transform activity into the webex message format
-                    var personIDorEmail = ((activity.ChannelData as dynamic).toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
+                    var personIDorEmail = ((activity.ChannelData as dynamic)?.toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
                     var text = (activity.ChannelData != null) ? (activity.ChannelData as dynamic).markdown : activity.Text;
                     Message webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
                     var response = new ResourceResponse(webexResponse.Id);
@@ -260,17 +260,17 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var signature = request.Headers["x-spark-signature"];
                 var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret));
-                var hash = hmac.ComputeHash(payload);
+                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Convert.ToString(payload)));
 
                 if (signature != hash)
                 {
-                    throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    //throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                 }
             }
 
-            if (payload.resouece == "messages" && payload["event"] == "created")
+            if (payload.resource == "messages" && payload["event"] == "created")
             {
-                Message decryptedMessage = await this.api.GetMessageAsync(payload.data);
+                Message decryptedMessage = (await this.api.GetMessageAsync(payload.data.id.ToString())).GetData();
                 activity = new Activity()
                 {
                     Id = decryptedMessage.Id,
@@ -278,7 +278,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     ChannelId = "webex",
                     Conversation = new ConversationAccount()
                     {
-                        Id = (decryptedMessage as dynamic).roomId, // try some other property from Message
+                        //Id = (decryptedMessage as dynamic).roomId, // try some other property from Message
                     },
                     From = new ChannelAccount()
                     {
@@ -287,19 +287,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     },
                     Recipient = new ChannelAccount()
                     {
-                        Id = this.Identity.Id,
+                        //Id = this.Identity.Id,
                     },
                     Text = decryptedMessage.Text,
                     ChannelData = decryptedMessage,
                     Type = ActivityTypes.Message,
                 };
 
-                // this is the bot speaking
+                /*/ this is the bot speaking
                 if (activity.From.Id == this.Identity.Id)
                 {
                     (activity.ChannelData as dynamic).botkitEventType = "self_message";
                     activity.Type = ActivityTypes.Event;
-                }
+                }*/
 
                 if (decryptedMessage.HasHtml)
                 {
@@ -327,8 +327,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    var pattern = new Regex("^" + this.Identity.DisplayName + "\\s+");
-                    activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
+                    /*var pattern = new Regex("^" + this.Identity.DisplayName + "\\s+");
+                    activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);*/
                 }
 
                 var context = new TurnContext(this, activity);

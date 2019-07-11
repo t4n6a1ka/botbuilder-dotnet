@@ -41,7 +41,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             if (this.config.AccessToken != null)
             {
-                // this.api = new TeamsAPIClient(this.config.AccessToken, null, new Func<TeamsResultInfo>);
                 this.api = TeamsAPI.CreateVersion1Client(config.AccessToken);
 
                 if (this.api == null)
@@ -58,21 +57,21 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var endpoint = new Uri(this.config.PublicAdress);
 
-                if (endpoint.Host != null)
+                /*if (endpoint.Host != null)
                 {
                     this.config.PublicAdress = endpoint.Host + ":" + endpoint.Port;
                 }
                 else
                 {
                     throw new Exception("Could not determine hostname of public address");
-                }
+                }*/
             }
             else
             {
                 throw new Exception("PublicAddress parameter required to receive webhooks");
             }
 
-            if (this.config.Secret == null)
+            if (this.config.Secret.Equals(string.Empty))
             {
                 // error: WARNING: No secret specified. Source of incoming webhooks will not be validated. https://developer.webex.com/webhooks-explained.html#auth
             }
@@ -159,7 +158,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    await this.api.CreateWebhookAsync(webHookName, new Uri(hookURL), EventResource.All, EventType.All);
+                    await this.api.CreateWebhookAsync(webHookName, new Uri(hookURL), EventResource.All, EventType.All, null, this.config.Secret);
                 }
             });
         }
@@ -254,21 +253,23 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var bodyStream = new StreamReader(request.Body);
             dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
 
-            Activity activity;
-
             if (!string.Equals(this.config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
-                var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret));
-                var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Convert.ToString(payload)));
-                hash = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
 
-                if (!string.Equals(signature, hash))
+                using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret)))
                 {
-                    throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    var hash = hmac.ComputeHash(request.Body);
+                    string hash2 = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+
+                    if (!string.Equals(signature, hash2))
+                    {
+                        //throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    }
                 }
             }
 
+            Activity activity;
             if (payload.resource == "messages" && payload["event"] == "created")
             {
                 Message decryptedMessage = (await this.api.GetMessageAsync(payload.data.id.ToString())).GetData();

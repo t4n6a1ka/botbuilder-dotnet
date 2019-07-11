@@ -181,8 +181,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     // transform activity into the webex message format
                     var personIDorEmail = ((activity.ChannelData as dynamic)?.toPersonEmail != null) ? (activity.ChannelData as dynamic).toPersonEmail : activity.Recipient.Id;
                     var text = (activity.ChannelData != null) ? (activity.ChannelData as dynamic).markdown : activity.Text;
-                    Message webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
-                    var response = new ResourceResponse(webexResponse.Id);
+                    TeamsResult<Message> webexResponse = await this.api.CreateDirectMessageAsync(personIDorEmail, text);
+                    var response = new ResourceResponse(webexResponse.Data.Id);
                     responses.Add(response);
                 }
                 else

@@ -256,15 +256,16 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             Activity activity;
 
-            if (this.config.Secret != null)
+            if (!string.Equals(this.config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
                 var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret));
                 var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Convert.ToString(payload)));
+                hash = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
 
                 if (!string.Equals(signature, hash))
                 {
-                    //throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                    throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                 }
             }
 

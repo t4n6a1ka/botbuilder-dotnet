@@ -24,6 +24,7 @@ namespace Microsoft.Bot.Builder.Webex.Sample.Controllers
             this.adapter = adapter;
             this.bot = bot;
 
+            adapter.GetIdentityAsync().Wait();
             adapter.RegisterWebhookSubscription("/api/messages");
         }
 

@@ -262,7 +262,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret));
                 var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(Convert.ToString(payload)));
 
-                if (signature != hash)
+                if (!string.Equals(signature, hash))
                 {
                     //throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                 }
@@ -278,7 +278,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     ChannelId = "webex",
                     Conversation = new ConversationAccount()
                     {
-                        //Id = (decryptedMessage as dynamic).roomId, // try some other property from Message
+                        Id = (decryptedMessage as dynamic).SpaceId, // .roomId,
                     },
                     From = new ChannelAccount()
                     {
@@ -287,19 +287,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     },
                     Recipient = new ChannelAccount()
                     {
-                        //Id = this.Identity.Id,
+                        Id = this.Identity.Id,
                     },
                     Text = decryptedMessage.Text,
                     ChannelData = decryptedMessage,
                     Type = ActivityTypes.Message,
                 };
 
-                /*/ this is the bot speaking
+                // this is the bot speaking
                 if (activity.From.Id == this.Identity.Id)
                 {
                     (activity.ChannelData as dynamic).botkitEventType = "self_message";
                     activity.Type = ActivityTypes.Event;
-                }*/
+                }
 
                 if (decryptedMessage.HasHtml)
                 {
@@ -327,8 +327,8 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                 }
                 else
                 {
-                    /*var pattern = new Regex("^" + this.Identity.DisplayName + "\\s+");
-                    activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);*/
+                    var pattern = new Regex("^" + this.Identity.DisplayName + "\\s+");
+                    activity.Text = activity.Text.Replace(pattern.ToString(), string.Empty);
                 }
 
                 var context = new TurnContext(this, activity);

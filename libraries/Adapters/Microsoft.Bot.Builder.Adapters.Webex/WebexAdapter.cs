@@ -253,18 +253,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             var bodyStream = new StreamReader(request.Body);
             dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
 
+            var json = JsonConvert.SerializeObject(payload);
+
             if (!string.Equals(this.config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
-
                 using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret)))
                 {
-                    var hash = hmac.ComputeHash(request.Body);
-                    string hash2 = BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
+                    var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
+                    string hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
 
-                    if (!string.Equals(signature, hash2))
+                    if (!string.Equals(signature, hash))
                     {
-                        //throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
+                        throw new Exception("WARNING: Webhook received message with invalid signature. Potential malicious behavior!");
                     }
                 }
             }

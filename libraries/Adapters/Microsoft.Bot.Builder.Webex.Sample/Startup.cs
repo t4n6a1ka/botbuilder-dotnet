@@ -17,17 +17,14 @@ namespace Microsoft.Bot.Builder.Webex.Sample
     public class Startup
     {
         private readonly WebexAdapter adapter;
-        private SimpleWebexAdapterOptions options;
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
 
-            options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAdress"], configuration["Secret"]);
+            var options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAddress"], configuration["Secret"], configuration["WebhookName"]);
             adapter = new WebexAdapter(options);
-            //adapter.ResetWebhookSubscriptions().Wait();
-            adapter.GetIdentityAsync().Wait();
-            adapter.RegisterWebhookSubscription("/api/messages").Wait();
+            adapter.RegisterWebhookSubscriptionAsync("/api/messages").Wait();
         }
 
         public IConfiguration Configuration { get; }
@@ -44,7 +41,7 @@ namespace Microsoft.Bot.Builder.Webex.Sample
             services.AddSingleton<IWebexAdapterOptions, ConfigurationWebexAdapterOptions>();
 
             // Create the Bot Framework Adapter.
-            services.AddSingleton<WebexAdapter>();
+            services.AddSingleton<WebexAdapter>(adapter);
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, EchoBot>();

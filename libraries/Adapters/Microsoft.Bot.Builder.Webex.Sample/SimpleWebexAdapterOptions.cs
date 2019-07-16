@@ -9,12 +9,11 @@ namespace Microsoft.Bot.Builder.Webex.Sample
 {
     public class SimpleWebexAdapterOptions : IWebexAdapterOptions
     {
-        public SimpleWebexAdapterOptions(string accessToken, string publicAdress, string secret, string webhookName)
+        public SimpleWebexAdapterOptions(string accessToken, string publicAdress, string secret)
         {
             this.AccessToken = accessToken;
             this.PublicAdress = publicAdress;
             this.Secret = secret;
-            this.WebhookName = webhookName;
         }
 
         public string AccessToken { get; set; }

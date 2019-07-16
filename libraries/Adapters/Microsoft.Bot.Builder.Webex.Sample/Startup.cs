@@ -16,9 +16,18 @@ namespace Microsoft.Bot.Builder.Webex.Sample
 {
     public class Startup
     {
+        private readonly WebexAdapter adapter;
+        private SimpleWebexAdapterOptions options;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            options = new SimpleWebexAdapterOptions(configuration["AccessToken"], configuration["PublicAdress"], configuration["Secret"]);
+            adapter = new WebexAdapter(options);
+            //adapter.ResetWebhookSubscriptions().Wait();
+            adapter.GetIdentityAsync().Wait();
+            adapter.RegisterWebhookSubscription("/api/messages").Wait();
         }
 
         public IConfiguration Configuration { get; }

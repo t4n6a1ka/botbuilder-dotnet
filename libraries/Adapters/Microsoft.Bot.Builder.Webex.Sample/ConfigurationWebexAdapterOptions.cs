@@ -10,7 +10,7 @@ namespace Microsoft.Bot.Builder.Webex.Sample
     public class ConfigurationWebexAdapterOptions : SimpleWebexAdapterOptions
     {
         public ConfigurationWebexAdapterOptions(IConfiguration configuration)
-             : base(configuration["AccessToken"], configuration["PublicAdress"], configuration["Secret"], configuration["WebhookName"])
+             : base(configuration["AccessToken"], configuration["PublicAdress"], configuration["Secret"])
         {
         }
     }

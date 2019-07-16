@@ -57,26 +57,19 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             {
                 var endpoint = new Uri(this.config.PublicAdress);
 
-                /*if (endpoint.Host != null)
+                if (endpoint.Host != null)
                 {
-                    this.config.PublicAdress = endpoint.Host + ":" + endpoint.Port;
+                    this.config.PublicAdress = endpoint.Host;
                 }
                 else
                 {
                     throw new Exception("Could not determine hostname of public address");
-                }*/
+                }
             }
             else
             {
                 throw new Exception("PublicAddress parameter required to receive webhooks");
             }
-
-            if (this.config.Secret.Equals(string.Empty))
-            {
-                // error: WARNING: No secret specified. Source of incoming webhooks will not be validated. https://developer.webex.com/webhooks-explained.html#auth
-            }
-
-            /** middlewares **/
         }
 
         /// <summary>
@@ -86,7 +79,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         public WebexBotWorker BotkitWorker { get; private set; }
 
         /// <summary>
-        /// Gets the identity of the bot.
+        /// Gets or sets the identity of the bot.
         /// </summary>
         private Person Identity { get; set; }
 
@@ -112,7 +105,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
             await this.GetIdentityAsync().ContinueWith((task) => botkit.CompleteDep("webex-identity"));
 
-            botkit.Ready(() => { (botkit.Adapter as WebexAdapter).RegisterWebhookSubscription(botkit.GetConfig("webhook_uri").ToString()); });
+            botkit.Ready(async () => { await (botkit.Adapter as WebexAdapter).RegisterWebhookSubscription(botkit.GetConfig("webhook_uri").ToString()); });
         }
 
         /// <summary>
@@ -134,11 +127,12 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
         /// Register a webhook subscription with Webex Teams to start receiving message events.
         /// </summary>
         /// <param name="webhookPath">The path of the webhook endpoint like `/api/messages`.</param>
-        public void RegisterWebhookSubscription(string webhookPath)
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task RegisterWebhookSubscription(string webhookPath)
         {
             var webHookName = this.config.WebhookName ?? "Botkit Firehose";
 
-            this.api.ListWebhooksAsync().ContinueWith(async (task) =>
+            await this.api.ListWebhooksAsync().ContinueWith(async (task) =>
             {
                 string hookId = null;
 
@@ -258,9 +252,11 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             if (!string.Equals(this.config.Secret, string.Empty))
             {
                 var signature = request.Headers["x-spark-signature"];
+
                 using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this.config.Secret)))
                 {
                     var hashArray = hmac.ComputeHash(Encoding.UTF8.GetBytes(json));
+
                     string hash = BitConverter.ToString(hashArray).Replace("-", string.Empty).ToLower();
 
                     if (!string.Equals(signature, hash))
@@ -281,7 +277,7 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
                     ChannelId = "webex",
                     Conversation = new ConversationAccount()
                     {
-                        Id = (decryptedMessage as dynamic).SpaceId, // .roomId,
+                        Id = (decryptedMessage as dynamic).SpaceId,
                     },
                     From = new ChannelAccount()
                     {
@@ -306,15 +302,14 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
 
                 if (decryptedMessage.HasHtml)
                 {
-                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=" + this.Identity.Id + ".*?>.*?</spark-mention>");
+                    var pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + this.Identity.Id + "\".*?>.*?</spark-mention>");
                     if (!decryptedMessage.Html.Equals(pattern))
                     {
                         var encodedId = this.Identity.Id;
-                        //var decoded = // Needs decoding?
 
                         // this should look like ciscospark://us/PEOPLE/<id string>
                         Match match = Regex.Match(encodedId, "/ciscospark://.*/(.*)/im");
-                        pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=" + match.Captures[1] + ".*?>.*?</spark-mention>");
+                        pattern = new Regex("^(<p>)?<spark-mention .*?data-object-id=\"" + match.Captures[1] + "\".*?>.*?</spark-mention>");
                     }
 
                     var action = decryptedMessage.Html.Replace(pattern.ToString(), string.Empty);
@@ -340,9 +335,6 @@ namespace Microsoft.Bot.Builder.Adapters.Webex
             }
             else
             {
-                // type == payload.resource + '.' + payload.event
-                // memberships.deleted for example
-                // payload.data contains stuff
                 activity = new Activity()
                 {
                     Id = payload.id,

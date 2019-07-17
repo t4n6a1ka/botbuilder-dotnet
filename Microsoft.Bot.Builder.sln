@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.106
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{4269F3C3-6B42-419B-B64A-3E6DC0F1574A}"
 EndProject
@@ -93,6 +93,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj", "{FAE650B7-B048-4307-A01C-FF75D357906C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Webex.Sample", "libraries\Adapters\Microsoft.Bot.Builder.Webex.Sample\Microsoft.Bot.Builder.Webex.Sample.csproj", "{F8C2C627-EDE5-4572-BDB0-62083952772F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Adapters.Twilio", "Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -335,6 +337,12 @@ Global
 		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -383,6 +391,7 @@ Global
 		{15AD271F-321B-4C98-B319-EC04FBF5C75B} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 		{FAE650B7-B048-4307-A01C-FF75D357906C} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 		{F8C2C627-EDE5-4572-BDB0-62083952772F} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
+		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

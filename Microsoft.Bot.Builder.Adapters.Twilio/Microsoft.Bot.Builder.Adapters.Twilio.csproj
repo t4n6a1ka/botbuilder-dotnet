@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Twilio" Version="5.31.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\libraries\Adapters\Microsoft.Bot.Builder.BotKit\Microsoft.Bot.Builder.BotKit.csproj" />
+    <ProjectReference Include="..\libraries\integration\Microsoft.Bot.Builder.Integration.AspNet.Core\Microsoft.Bot.Builder.Integration.AspNet.Core.csproj" />
+    <ProjectReference Include="..\libraries\Microsoft.Bot.Builder\Microsoft.Bot.Builder.csproj" />
+  </ItemGroup>
+
+</Project>

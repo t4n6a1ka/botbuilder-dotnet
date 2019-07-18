@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Bot.Schema;
+using Newtonsoft.Json;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
+using Twilio.Security;
 
 namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
@@ -16,8 +18,26 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         private readonly ITwilioAdapterOptions options;
 
+        private readonly TwilioClient api; // deprecated?
+
         public TwilioAdapter(ITwilioAdapterOptions options)
         {
+            this.options = options;
+
+            if (options.TwilioNumber.Equals(string.Empty))
+            {
+                // error: TwilioNumber is a required part of the configuration.
+            }
+
+            if (options.AccountSID.Equals(string.Empty))
+            {
+                // error: AccountSID  is a required part of the configuration.
+            }
+
+            if (options.AuthToken.Equals(string.Empty))
+            {
+                // error: AuthToken is a required part of the configuration.
+            }
         }
 
         public TwilioBotWorker BotkitWorker { get; private set; }
@@ -31,7 +51,30 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A resource response.</returns>
         public override async Task<ResourceResponse[]> SendActivitiesAsync(ITurnContext turnContext, Activity[] activities, CancellationToken cancellationToken)
         {
-            return await Task.FromException<ResourceResponse[]>(new NotImplementedException());
+            List<ResourceResponse> responses = new List<ResourceResponse>();
+            for (var i = 0; i < activities.Length; i++)
+            {
+                var activity = activities[i];
+                if (activity.Type == ActivityTypes.Message)
+                {
+                    var message = this.ActivityToTwilio(activity);
+
+                    var res = await MessageResource.CreateAsync(message.To, message.AccountSid, message.From, message.MessagingServiceSid, message.Body, null, null, message.Sid);
+
+                    var response = new ResourceResponse()
+                    {
+                        Id = res.Sid,
+                    };
+
+                    responses.Add(response);
+                }
+                else
+                {
+                    // error: unknown message type
+                }
+            }
+
+            return responses.ToArray();
         }
 
         /// <summary>
@@ -44,7 +87,51 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ProcessAsync(HttpRequest request, HttpResponse response, IBot bot, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await Task.FromException(new NotImplementedException());
+            if (this.VerifySignature(request, response))
+            {
+                var bodyStream = new StreamReader(request.Body);
+                MessageResource twilioEvent = JsonConvert.DeserializeObject(bodyStream.ReadToEnd()) as MessageResource;
+
+                var activity = new Activity()
+                {
+                    Id = twilioEvent.MessagingServiceSid,
+                    Timestamp = new DateTime(),
+                    ChannelId = "twilio-sms",
+                    Conversation = new ConversationAccount()
+                    {
+                        Id = twilioEvent.From.ToString(),
+                    },
+                    From = new ChannelAccount()
+                    {
+                        Id = twilioEvent.From.ToString(),
+                    },
+                    Recipient = new ChannelAccount()
+                    {
+                        Id = twilioEvent.To.ToString(),
+                    },
+                    Text = (twilioEvent as dynamic).Body,
+                    ChannelData = twilioEvent,
+                    Type = ActivityTypes.Message,
+                };
+
+                // Detect attachments
+                if (Convert.ToInt32(twilioEvent.NumMedia) > 0)
+                {
+                    // specify a different event type for Botkit
+                    (activity.ChannelData as dynamic).botkitEventType = "picture_message";
+                }
+
+                // create a conversation reference
+                using (var context = new TurnContext(this, activity))
+                {
+                    await this.RunPipelineAsync(context, bot.OnTurnAsync, default(CancellationToken));
+
+                    response.StatusCode = 200;
+                    response.ContentType = "text/plain";
+                    string text = (context.TurnState["httpBody"] != null) ? context.TurnState["httpBody"].ToString() : string.Empty;
+                    await response.WriteAsync(text);
+                }
+            }
         }
 
         /// <summary>
@@ -76,11 +163,15 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <summary>
         /// Formats a BotBuilder activity into an outgoing Twilio SMS message.
         /// </summary>
-        /// <param name="activity">A BotBuilder Activity object</param>
+        /// <param name="activity">A BotBuilder Activity object.</param>
         /// <returns>a Twilio message object with {body, from, to, mediaUrl}.</returns>
         private MessageResource ActivityToTwilio(Activity activity)
         {
-            throw new NotImplementedException();
+            List<Uri> mediaURLs = new List<Uri>();
+            mediaURLs.Add(new Uri((activity.ChannelData as dynamic)?.mediaURL));
+            MessageResource message = MessageResource.Create(activity.Conversation.Id, null, this.options.TwilioNumber, null, activity.Text, mediaURLs);
+
+            return message;
         }
 
         /// <summary>
@@ -91,7 +182,12 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         private async Task ContinueConversationAsync(ConversationReference reference, BotCallbackHandler logic)
         {
-            await Task.FromException(new NotImplementedException());
+            var request = reference.GetContinuationActivity().ApplyConversationReference(reference, true);
+
+            using (var context = new TurnContext(this, request))
+            {
+                await this.RunPipelineAsync(context, logic, default(CancellationToken));
+            }
         }
 
         /// <summary>
@@ -100,6 +196,26 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
         /// <returns>If signature is valid, returns true. Otherwise, sends a 401 error status via http response and then returns false.</returns>
         private bool VerifySignature(HttpRequest request, HttpResponse response)
         {
+            string twilioSignature;
+            string validationURL;
+
+            twilioSignature = request.Headers["x-twilio-signature"];
+
+            validationURL = this.options.ValidationURL ?? (request.Headers["x-forwarded-proto"][0] ?? request.Protocol + "://" + request.Host + request.Path);
+
+            var requestValidator = new RequestValidator(this.options.AuthToken);
+
+            var bodyStream = new StreamReader(request.Body);
+            dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
+            string stringifiedBody = JsonConvert.SerializeObject(payload);
+
+            if (!twilioSignature.Equals(string.Empty) && requestValidator.Validate(validationURL, stringifiedBody, twilioSignature))
+            {
+                return true;
+            }
+
+            // error: Signature verification failed, Ignoring message
+
             return false;
         }
     }

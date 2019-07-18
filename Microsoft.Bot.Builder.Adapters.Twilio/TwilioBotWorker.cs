@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder.BotKit;
 using Microsoft.Bot.Builder.BotKit.Core;
 using Microsoft.Bot.Schema;

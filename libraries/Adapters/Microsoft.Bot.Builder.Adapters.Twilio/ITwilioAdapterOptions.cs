@@ -1,5 +1,4 @@
-﻿
-namespace Microsoft.Bot.Builder.Adapters.Twilio
+﻿namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     public interface ITwilioAdapterOptions
     {

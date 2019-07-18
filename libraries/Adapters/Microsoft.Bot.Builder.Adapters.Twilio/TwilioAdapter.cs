@@ -18,26 +18,26 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
 
         private readonly ITwilioAdapterOptions options;
 
-        private readonly TwilioClient api; // deprecated?
-
         public TwilioAdapter(ITwilioAdapterOptions options)
         {
             this.options = options;
 
             if (options.TwilioNumber.Equals(string.Empty))
             {
-                // error: TwilioNumber is a required part of the configuration.
+                throw new Exception("TwilioNumber is a required part of the configuration.");
             }
 
             if (options.AccountSID.Equals(string.Empty))
             {
-                // error: AccountSID  is a required part of the configuration.
+                throw new Exception("AccountSID is a required part of the configuration.");
             }
 
             if (options.AuthToken.Equals(string.Empty))
             {
-                // error: AuthToken is a required part of the configuration.
+                throw new Exception("AuthToken is a required part of the configuration.");
             }
+
+            TwilioClient.Init(this.options.AccountSID, this.options.AuthToken);
         }
 
         public TwilioBotWorker BotkitWorker { get; private set; }
@@ -70,7 +70,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 }
                 else
                 {
-                    // error: unknown message type
+                    // log error: unknown message type
                 }
             }
 
@@ -214,7 +214,7 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
                 return true;
             }
 
-            // error: Signature verification failed, Ignoring message
+            // log error: Signature verification failed, Ignoring message
 
             return false;
         }

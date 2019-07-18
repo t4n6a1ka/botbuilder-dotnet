@@ -92,9 +92,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Webex", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Webex\Microsoft.Bot.Builder.Adapters.Webex.csproj", "{FAE650B7-B048-4307-A01C-FF75D357906C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Webex.Sample", "libraries\Adapters\Microsoft.Bot.Builder.Webex.Sample\Microsoft.Bot.Builder.Webex.Sample.csproj", "{F8C2C627-EDE5-4572-BDB0-62083952772F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Bot.Builder.Adapters.Twilio", "Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Bot.Builder.Adapters.Twilio", "libraries\Adapters\Microsoft.Bot.Builder.Adapters.Twilio\Microsoft.Bot.Builder.Adapters.Twilio.csproj", "{F4799B06-5397-415A-81CB-4D25A86C3E00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -331,18 +329,12 @@ Global
 		{FAE650B7-B048-4307-A01C-FF75D357906C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAE650B7-B048-4307-A01C-FF75D357906C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAE650B7-B048-4307-A01C-FF75D357906C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8C2C627-EDE5-4572-BDB0-62083952772F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Debug - NuGet Packages|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Debug - NuGet Packages|Any CPU.Build.0 = Debug|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4799B06-5397-415A-81CB-4D25A86C3E00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -390,8 +382,7 @@ Global
 		{C756BAD8-12A4-4BB6-B444-B8220A581A84} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 		{15AD271F-321B-4C98-B319-EC04FBF5C75B} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 		{FAE650B7-B048-4307-A01C-FF75D357906C} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
-		{F8C2C627-EDE5-4572-BDB0-62083952772F} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
-		{68DC6F4A-B27C-4247-BE3E-B9FD7505E19D} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
+		{F4799B06-5397-415A-81CB-4D25A86C3E00} = {B765958C-1CD5-49DF-9EA0-8F8756951F57}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7173C9F3-A7F9-496E-9078-9156E35D6E16}

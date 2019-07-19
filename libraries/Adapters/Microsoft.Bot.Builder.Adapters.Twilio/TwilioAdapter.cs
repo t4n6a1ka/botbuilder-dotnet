@@ -209,10 +209,8 @@ namespace Microsoft.Bot.Builder.Adapters.Twilio
             var requestValidator = new RequestValidator(this.options.AuthToken);
 
             var bodyStream = new StreamReader(request.Body);
-            dynamic payload = JsonConvert.DeserializeObject(bodyStream.ReadToEnd());
-            string stringifiedBody = JsonConvert.SerializeObject(payload);
 
-            if (!twilioSignature.Equals(string.Empty) && requestValidator.Validate(validationURL, stringifiedBody, twilioSignature))
+            if (!twilioSignature.Equals(string.Empty) && requestValidator.Validate(validationURL, bodyStream.ReadToEnd(), twilioSignature))
             {
                 return true;
             }

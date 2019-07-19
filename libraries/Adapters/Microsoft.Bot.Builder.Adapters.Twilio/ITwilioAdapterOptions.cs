@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Bot.Builder.Adapters.Twilio
+﻿// Copyright(c) Microsoft Corporation.All rights reserved.
+// Licensed under the MIT License.
+
+namespace Microsoft.Bot.Builder.Adapters.Twilio
 {
     public interface ITwilioAdapterOptions
     {

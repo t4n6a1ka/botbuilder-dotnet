@@ -1,4 +1,4 @@
-name: Typecript
+name: TypeScript
 
 on: [push]
 
